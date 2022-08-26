@@ -11,9 +11,9 @@ func HelloServer(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
+	log.Println("start HelloServer")
 	http.HandleFunc("/", HelloServer)
-	err := http.ListenAndServeTLS(":443", "server.crt", "server.key", nil)
-	if err != nil {
+	if err := http.ListenAndServeTLS(":443", "server.crt", "server.key", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
