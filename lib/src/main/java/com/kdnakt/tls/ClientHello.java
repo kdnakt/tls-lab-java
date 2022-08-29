@@ -5,15 +5,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class ClientHello {
-    public int[] getMessage() {
-        // example from https://tls12.xargs.org/
-        final int[] clientHello = {
+
+    public int[] getRecordHeader() {
+        return new int[]{
             // Record header
             0x16, // type handshake
             0x03, 0x01, // protocol version TLS1.0(3.1)
             // 0x00, 0xa5, // 165 bytes follows
             0x00, 0x9b, // 155 bytes follows
+        };
+    }
 
+    public int[] getMessage() {
+        // example from https://tls12.xargs.org/
+        final int[] clientHello = {
             // Handshake header
             0x01, // type ClientHello
             // 0x00, 0x00, 0xa1, // 161 bytes follows
@@ -104,6 +109,12 @@ public class ClientHello {
     public void writeTo(final OutputStream out) throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.out.println("\n---Request---\n");
+        int[] recordHeader = getRecordHeader();
+        for (int r : recordHeader) {
+            baos.write(r);
+            System.out.print(r);
+            System.out.print(' ');
+        }
         for (int i : getMessage()) {
             baos.write(i);
             System.out.print(i);
