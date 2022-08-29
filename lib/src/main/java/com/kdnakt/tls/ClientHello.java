@@ -1,5 +1,9 @@
 package com.kdnakt.tls;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 public class ClientHello {
     public int[] getMessage() {
         // example from https://tls12.xargs.org/
@@ -95,5 +99,17 @@ public class ClientHello {
                 0x00, 0x00 // 0 byte follows
         };
         return clientHello;
+    }
+
+    public void writeTo(final OutputStream out) throws IOException {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.out.println("\n---Request---\n");
+        for (int i : getMessage()) {
+            baos.write(i);
+            System.out.print(i);
+            System.out.print(' ');
+        }
+        baos.writeTo(out);
+        System.out.println();
     }
 }

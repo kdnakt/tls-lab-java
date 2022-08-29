@@ -3,7 +3,6 @@ package com.kdnakt.tls;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -16,16 +15,8 @@ class LibraryTest {
             OutputStream out = socket.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            System.out.println("\n---Request---\n");
             ClientHello clientHello = new ClientHello();
-            for (int i : clientHello.getMessage()) {
-                baos.write(i);
-                System.out.print(i);
-                System.out.print(' ');
-            }
-            baos.writeTo(out);
-            System.out.println();
+            clientHello.writeTo(out);
 
             System.out.println();
             // Server Hello
