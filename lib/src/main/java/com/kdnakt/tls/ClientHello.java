@@ -11,7 +11,7 @@ public class ClientHello {
             0x16, // type handshake
             0x03, 0x01, // protocol version TLS1.0(3.1)
             // 0x00, 0xa5, // 165 bytes follows
-            0x00, 0x9b, // 155 bytes follows
+            // 0x00, 0x9b, // 155 bytes follows
         };
     }
 
@@ -113,7 +113,18 @@ public class ClientHello {
             System.out.print(r);
             System.out.print(' ');
         }
-        for (int i : getMessage()) {
+        int[] message = getMessage();
+        if (message.length > 255) {
+            int len = message.length >> 8;
+            out.write(len); // TODO: write test
+            System.out.print(len);
+            System.out.print(' ');
+        }
+        int len = message.length;
+        out.write(len);
+        System.out.print(len);
+        System.out.print(' ');
+        for (int i : message) {
             out.write(i);
             System.out.print(i);
             System.out.print(' ');
