@@ -1,11 +1,10 @@
 package com.kdnakt.tls;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import org.junit.jupiter.api.Test;
@@ -45,7 +44,7 @@ class LibraryTest {
             System.out.println("Stop reading input stream.");
             // Certificate, Server Key Exchange, Server Hello Done
         } catch (IOException e) {
-            e.printStackTrace();
+            fail(e);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.kdnakt.tls;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -106,29 +107,29 @@ public class ClientHello {
     }
 
     public void writeTo(final OutputStream out) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         System.out.println("\n---Request---\n");
         int[] recordHeader = getRecordHeader();
         for (int r : recordHeader) {
-            out.write(r);
+            baos.write(r);
             System.out.print(r);
             System.out.print(' ');
         }
         int[] message = getMessage();
-        if (message.length > 255) {
-            int len = message.length >> 8;
-            out.write(len); // TODO: write test
-            System.out.print(len);
-            System.out.print(' ');
-        }
-        int len = message.length;
-        out.write(len);
-        System.out.print(len);
+        int len1 = message.length >> 8;
+        baos.write(len1);
+        System.out.print(len1);
+        System.out.print(' ');
+        int len2 = message.length;
+        baos.write(len2);
+        System.out.print(len2);
         System.out.print(' ');
         for (int i : message) {
-            out.write(i);
+            baos.write(i);
             System.out.print(i);
             System.out.print(' ');
         }
+        baos.writeTo(out);
         System.out.println();
     }
 }
