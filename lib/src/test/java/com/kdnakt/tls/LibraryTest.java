@@ -60,13 +60,6 @@ class LibraryTest {
             // Server Hello
             ServerHello serverHello = TLSRecordFactory.readRecord(in);
             assertEquals(55, serverHello.length());
-            System.out.println("\n---Response---\n");
-
-            for (int i = 0; i < serverHello.length(); i++) {
-                System.out.print(in.read());
-                System.out.print(' ');
-            }
-            System.out.println();
             System.out.println("Stop reading input stream.");
             // Certificate, Server Key Exchange, Server Hello Done
         } catch (IOException e) {
