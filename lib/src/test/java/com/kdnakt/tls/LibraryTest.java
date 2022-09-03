@@ -92,4 +92,29 @@ class LibraryTest {
             fail(e);
         }
     }
+
+    @Test void testServerKeyExchange() {
+        try (Socket socket = new Socket("localhost", 443);
+            OutputStream out = socket.getOutputStream();
+            InputStream in = socket.getInputStream()) {
+
+            ClientHello clientHello = new ClientHello();
+            clientHello.writeTo(out);
+
+            System.out.println();
+            // Server Hello
+            TLSRecordFactory.readRecord(in);
+            // Certificate
+            TLSRecordFactory.readRecord(in);
+            // ServerKeyExchange
+            ServerKeyExchange ske = (ServerKeyExchange) TLSRecordFactory.readRecord(in);
+            int hashAlgorithm = ske.getHashAlgorithm();
+            assertEquals(4, hashAlgorithm); // SHA256
+            int signatureAlgorithm = ske.getSignatureAlgorithm();
+            assertEquals(3, signatureAlgorithm); // ECDSA
+            System.out.println("Stop reading input stream.");
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
 }

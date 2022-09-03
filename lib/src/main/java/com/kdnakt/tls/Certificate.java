@@ -34,6 +34,7 @@ public class Certificate implements HandshakeMessage {
             CertificateFactory f = CertificateFactory.getInstance("X.509");
             cert = (X509Certificate) f.generateCertificate(in);
         }
+        // TODO: generate multiple certificates
         return cert;
     }
 
