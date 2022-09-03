@@ -19,17 +19,17 @@ public class TLSRecordFactory {
         int length2 = in.read();
         System.out.println(length2);
         int length = (length1 << 8) + length2;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(length);
+        int[] message = new int[length];
         for (int i = 0; i < length; i++) {
             int b = in.read();
-            baos.write(b);
+            message[i] = b;
             System.out.print(b);
             System.out.print(' ');
         }
         System.out.println();
         switch (type) {
             case 22: // handshake
-                return HandshakeMessage.valueOf(baos.toByteArray());
+                return HandshakeMessage.valueOf(message);
             default:
                 throw new RuntimeException("Unknown TLS Record type: " + type);
         }

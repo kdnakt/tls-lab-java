@@ -2,16 +2,16 @@ package com.kdnakt.tls;
 
 public class ServerHello implements HandshakeMessage {
 
-    private byte[] message;
+    private int[] message;
 
-    public ServerHello(byte[] message) {
+    public ServerHello(int[] message) {
         this.message = message;
     }
 
     public int length() {
         return message.length;
     }
-    public byte[] getMessage() {
+    public int[] getMessage() {
         return message;
     }
 }

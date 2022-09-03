@@ -2,13 +2,13 @@ package com.kdnakt.tls;
 
 public interface HandshakeMessage {
 
-    static HandshakeMessage valueOf(byte[] bytes) {
+    static HandshakeMessage valueOf(int[] bytes) {
         int type = bytes[0];
         int len1 = bytes[1];
         int len2 = bytes[2];
         int len3 = bytes[3];
         int length = (len1 << 16) + (len2 << 8) + len3;
-        byte[] message = new byte[length];
+        int[] message = new int[length];
         System.arraycopy(bytes, 4, message, 0, length);
         switch (type) {
             case 2:

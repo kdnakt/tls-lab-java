@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import org.junit.jupiter.api.Test;
@@ -87,7 +88,7 @@ class LibraryTest {
             assertNotNull(c);
             System.out.println("Stop reading input stream.");
             // Certificate, Server Key Exchange, Server Hello Done
-        } catch (IOException e) {
+        } catch (Exception e) {
             fail(e);
         }
     }
