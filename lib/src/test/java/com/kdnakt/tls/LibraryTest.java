@@ -1,12 +1,15 @@
 package com.kdnakt.tls;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.security.cert.X509Certificate;
+
 import org.junit.jupiter.api.Test;
 
 class LibraryTest {
@@ -58,8 +61,30 @@ class LibraryTest {
 
             System.out.println();
             // Server Hello
-            ServerHello serverHello = TLSRecordFactory.readRecord(in);
-            assertEquals(55, serverHello.length());
+            ServerHello serverHello = (ServerHello) TLSRecordFactory.readRecord(in);
+            assertEquals(51, serverHello.length());
+            System.out.println("Stop reading input stream.");
+            // Certificate, Server Key Exchange, Server Hello Done
+        } catch (IOException e) {
+            fail(e);
+        }
+    }
+
+    @Test void testCertificate() {
+        try (Socket socket = new Socket("localhost", 443);
+            OutputStream out = socket.getOutputStream();
+            InputStream in = socket.getInputStream()) {
+
+            ClientHello clientHello = new ClientHello();
+            clientHello.writeTo(out);
+
+            System.out.println();
+            // Server Hello
+            TLSRecordFactory.readRecord(in);
+            // Certificate
+            Certificate certificate = (Certificate) TLSRecordFactory.readRecord(in);
+            X509Certificate c = certificate.getX509Certificate();
+            assertNotNull(c);
             System.out.println("Stop reading input stream.");
             // Certificate, Server Key Exchange, Server Hello Done
         } catch (IOException e) {
