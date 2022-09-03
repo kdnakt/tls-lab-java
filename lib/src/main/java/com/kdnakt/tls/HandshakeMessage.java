@@ -17,6 +17,8 @@ public interface HandshakeMessage {
                 return new Certificate(message);
             case 12:
                 return new ServerKeyExchange(message);
+            case 14:
+                return new ServerHelloDone(length);
             default:
                 throw new RuntimeException("Unknown Handshake Message type: " + type);
         }

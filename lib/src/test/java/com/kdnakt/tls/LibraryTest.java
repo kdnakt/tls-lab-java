@@ -117,4 +117,28 @@ class LibraryTest {
             fail(e);
         }
     }
+
+    @Test void testServerHelloDone() {
+        try (Socket socket = new Socket("localhost", 443);
+            OutputStream out = socket.getOutputStream();
+            InputStream in = socket.getInputStream()) {
+
+            ClientHello clientHello = new ClientHello();
+            clientHello.writeTo(out);
+
+            System.out.println();
+            // Server Hello
+            TLSRecordFactory.readRecord(in);
+            // Certificate
+            TLSRecordFactory.readRecord(in);
+            // ServerKeyExchange
+            TLSRecordFactory.readRecord(in);
+            // ServerHelloDone
+            ServerHelloDone serverHelloDone = (ServerHelloDone) TLSRecordFactory.readRecord(in);
+            assertEquals(0, serverHelloDone.length());
+            System.out.println("Stop reading input stream.");
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
 }
