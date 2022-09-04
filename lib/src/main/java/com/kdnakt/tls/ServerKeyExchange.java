@@ -36,4 +36,8 @@ public class ServerKeyExchange implements HandshakeMessage {
         return signatureAlgorithm;
     }
 
+    public int getNamedCurve() {
+        return namedCurve;
+    }
+
 }

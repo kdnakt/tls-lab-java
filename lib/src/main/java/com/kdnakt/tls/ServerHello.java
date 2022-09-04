@@ -23,6 +23,7 @@ public class ServerHello implements HandshakeMessage {
         System.arraycopy(message, i, random, 0, 32);
         i += 32;
         sessionIdLen = message[i++];
+        // Cipher Suite: TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 (0xcca9)
         cipherSuite = (message[i++] << 8) + message[i++];
         compressionMethod = message[i++];
         extLen = (message[i++] << 8) + message[i++];
