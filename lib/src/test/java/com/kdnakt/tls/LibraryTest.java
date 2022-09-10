@@ -209,10 +209,12 @@ class LibraryTest {
             System.arraycopy(ms, 0, seed, 0, msLen);
             ByteArrayOutputStream cr = new ByteArrayOutputStream();
             for (int i : clientRandom) cr.write(i);
-            System.arraycopy(cr.toByteArray(), 0, seed, msLen, 32);
+            byte[] crarr = cr.toByteArray();
+            System.arraycopy(crarr, 0, seed, msLen, 32);
             ByteArrayOutputStream sr = new ByteArrayOutputStream();
             for (int i : serverRandom) sr.write(i);
-            System.arraycopy(sr.toByteArray(), 0, seed, msLen + 32, 32);
+            byte[] srarr = sr.toByteArray();
+            System.arraycopy(srarr, 0, seed, msLen + 32, 32);
 
             String algorithm = "HmacSHA256";
             SecretKeySpec pms = new SecretKeySpec(preMasterSecret, algorithm);
@@ -233,6 +235,72 @@ class LibraryTest {
             System.arraycopy(p1, 0, masterSecret, 0, 32);
             System.arraycopy(p2, 0, masterSecret, 32, 16);
 
+            SecretKeySpec master_secret = new SecretKeySpec(masterSecret, algorithm);
+            // generate final encryption keys
+            // seed = "key expansion" + server_random + client_random
+            byte[] ke = "key expansion".getBytes();
+            int keLen = ke.length;
+            byte[] keySeed = new byte[keLen + 32 + 32];
+            System.arraycopy(ke, 0, keySeed, 0, keLen);
+            System.arraycopy(crarr, 0, keySeed, keLen, 32);
+            System.arraycopy(srarr, 0, keySeed, keLen + 32, 32);
+
+            mac.reset();
+            mac.init(master_secret);
+            // a0 = seed
+            byte[] ke_a0 = keySeed;
+            // a1 = HMAC-SHA256(key=MasterSecret, data=a0)
+            byte[] ke_a1 = mac.doFinal(ke_a0);
+            // a2 = HMAC-SHA256(key=MasterSecret, data=a1)
+            byte[] ke_a2 = mac.doFinal(ke_a1);
+            // a3 = HMAC-SHA256(key=MasterSecret, data=a2)
+            byte[] ke_a3 = mac.doFinal(ke_a2);
+            // a4 = ...
+            byte[] ke_a4 = mac.doFinal(ke_a3);
+            // p1 = HMAC-SHA256(key=MasterSecret, data=a1 + seed)
+            byte[] ke_data1 = new byte[ke_a1.length + keLen];
+            System.arraycopy(ke_a1, 0, ke_data1, 0, ke_a1.length);
+            System.arraycopy(keySeed, 0, ke_data1, ke_a1.length, keLen);
+            byte[] ke_p1 = mac.doFinal(ke_data1);
+            // p2 = HMAC-SHA256(key=MasterSecret, data=a2 + seed)
+            byte[] ke_data2 = new byte[ke_a2.length + keLen];
+            System.arraycopy(ke_a2, 0, ke_data2, 0, ke_a2.length);
+            System.arraycopy(keySeed, 0, ke_data2, ke_a2.length, keLen);
+            byte[] ke_p2 = mac.doFinal(ke_data2);
+            // p3 = HMAC-SHA256(key=MasterSecret, data=a3 + seed)
+            byte[] ke_data3 = new byte[ke_a3.length + keLen];
+            System.arraycopy(ke_a3, 0, ke_data3, 0, ke_a3.length);
+            System.arraycopy(keySeed, 0, ke_data3, ke_a3.length, keLen);
+            byte[] ke_p3 = mac.doFinal(ke_data3);
+            // p4 = ...
+            byte[] ke_data4 = new byte[ke_a4.length + keLen];
+            System.arraycopy(ke_a4, 0, ke_data4, 0, ke_a4.length);
+            System.arraycopy(keySeed, 0, ke_data4, ke_a4.length, keLen);
+            byte[] ke_p4 = mac.doFinal(ke_data4);
+            // p = p1 + p2 + p3 + p4 ...
+            byte[] p = new byte[ke_p1.length + ke_p2.length + ke_p3.length + ke_p4.length];
+            System.arraycopy(ke_p1, 0, p, 0, ke_p1.length);
+            System.arraycopy(ke_p2, 0, p, ke_p1.length, ke_p2.length);
+            System.arraycopy(ke_p3, 0, p, ke_p1.length + ke_p2.length, ke_p3.length);
+            System.arraycopy(ke_p4, 0, p, ke_p1.length + ke_p2.length + ke_p3.length, ke_p4.length);
+            // client write mac key = [first 20 bytes of p]
+            byte[] clientWriteMacKey = new byte[20];
+            System.arraycopy(p, 0, clientWriteMacKey, 0, 20);
+            // server write mac key = [next 20 bytes of p]
+            byte[] serverWriteMacKey = new byte[20];
+            System.arraycopy(p, 20, serverWriteMacKey, 0, 20);
+            // client write key = [next 16 bytes of p]
+            byte[] clientWriteKey = new byte[16];
+            System.arraycopy(p, 20 + 16, clientWriteKey, 0, 16);
+            // server write key = [next 16 bytes of p]
+            byte[] serverWriteKey = new byte[16];
+            System.arraycopy(p, 20 + 16 + 16, serverWriteKey, 0, 16);
+            // client write IV = [next 16 bytes of p]
+            byte[] clientWriteIV = new byte[16];
+            System.arraycopy(p, 20 + 16 + 16 + 16, clientWriteIV, 0, 16);
+            // server write IV = [next 16 bytes of p]
+            byte[] serverWriteIV = new byte[16];
+            System.arraycopy(p, 20 + 16 + 16 + 16 + 16, serverWriteIV, 0, 16);
             ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic());
             cke.writeTo(out);
 
@@ -240,6 +308,8 @@ class LibraryTest {
             cccs.writeTo(out);
 
             ClientFinished cf = new ClientFinished(
+                clientWriteIV,
+                master_secret,
                 clientHello,
                 sh,
                 certificate,
