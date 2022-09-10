@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.PublicKey;
 
-public class ClientKeyExchange {
+public class ClientKeyExchange implements HandshakeMessage {
 
     private PublicKey pubKey;
     public ClientKeyExchange(PublicKey pubKey) {

@@ -3,7 +3,7 @@ package com.kdnakt.tls;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class ClientChangeCipherSpec {
+public class ClientChangeCipherSpec implements HandshakeMessage {
 
     public void writeTo(OutputStream out) throws IOException {
         byte[] message = {
