@@ -321,6 +321,7 @@ class LibraryTest {
             cf.writeTo(out);
 
             ServerChangeCipherSpec sccs = (ServerChangeCipherSpec) TLSRecordFactory.readRecord(in).getChangeCipherSpec();
+            assertNotNull(sccs);
             System.out.println("Stop reading input stream.");
         } catch (Exception e) {
             fail(e);
