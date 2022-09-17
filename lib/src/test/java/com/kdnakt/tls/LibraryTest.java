@@ -72,7 +72,7 @@ class LibraryTest {
 
             System.out.println();
             // Server Hello
-            ServerHello serverHello = (ServerHello) TLSRecordFactory.readRecord(in);
+            ServerHello serverHello = (ServerHello) TLSRecordFactory.readRecord(in).getHandshakeMessage();
             assertEquals(51, serverHello.length());
             assertEquals(32, serverHello.getRandom().length);
             System.out.println("Stop reading input stream.");
@@ -94,7 +94,7 @@ class LibraryTest {
             // Server Hello
             TLSRecordFactory.readRecord(in);
             // Certificate
-            Certificate certificate = (Certificate) TLSRecordFactory.readRecord(in);
+            Certificate certificate = (Certificate) TLSRecordFactory.readRecord(in).getHandshakeMessage();
             X509Certificate c = certificate.getX509Certificate();
             assertNotNull(c);
             System.out.println("Stop reading input stream.");
@@ -118,7 +118,7 @@ class LibraryTest {
             // Certificate
             TLSRecordFactory.readRecord(in);
             // ServerKeyExchange
-            ServerKeyExchange ske = (ServerKeyExchange) TLSRecordFactory.readRecord(in);
+            ServerKeyExchange ske = (ServerKeyExchange) TLSRecordFactory.readRecord(in).getHandshakeMessage();
             int hashAlgorithm = ske.getHashAlgorithm();
             assertEquals(4, hashAlgorithm); // SHA256
             int signatureAlgorithm = ske.getSignatureAlgorithm();
@@ -145,7 +145,7 @@ class LibraryTest {
             // ServerKeyExchange
             TLSRecordFactory.readRecord(in);
             // ServerHelloDone
-            ServerHelloDone serverHelloDone = (ServerHelloDone) TLSRecordFactory.readRecord(in);
+            ServerHelloDone serverHelloDone = (ServerHelloDone) TLSRecordFactory.readRecord(in).getHandshakeMessage();
             assertEquals(0, serverHelloDone.length());
             System.out.println("Stop reading input stream.");
         } catch (Exception e) {
@@ -167,16 +167,16 @@ class LibraryTest {
             System.out.println();
             // Server Hello
             // Cipher Suite: TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 (0xcca9)
-            ServerHello sh = (ServerHello) TLSRecordFactory.readRecord(in);
+            ServerHello sh = (ServerHello) TLSRecordFactory.readRecord(in).getHandshakeMessage();
             int[] serverRandom = sh.getRandom();
             // Certificate
-            Certificate certificate = (Certificate) TLSRecordFactory.readRecord(in);
+            Certificate certificate = (Certificate) TLSRecordFactory.readRecord(in).getHandshakeMessage();
             // ServerKeyExchange
-            ServerKeyExchange ske = (ServerKeyExchange) TLSRecordFactory.readRecord(in);
+            ServerKeyExchange ske = (ServerKeyExchange) TLSRecordFactory.readRecord(in).getHandshakeMessage();
             int namedCurve = ske.getNamedCurve(); // 13+160=173=x25519
             int[] publicKey = ske.getPublicKey();
             // ServerHelloDone
-            ServerHelloDone done = (ServerHelloDone) TLSRecordFactory.readRecord(in);
+            ServerHelloDone done = (ServerHelloDone) TLSRecordFactory.readRecord(in).getHandshakeMessage();
 
             // Calculate Client Key
             KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
@@ -319,6 +319,8 @@ class LibraryTest {
                 cccs
             );
             cf.writeTo(out);
+
+            ServerChangeCipherSpec sccs = (ServerChangeCipherSpec) TLSRecordFactory.readRecord(in).getChangeCipherSpec();
             System.out.println("Stop reading input stream.");
         } catch (Exception e) {
             fail(e);

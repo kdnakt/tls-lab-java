@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 public class TLSRecordFactory {
 
-    public static HandshakeMessage readRecord(InputStream in) throws IOException {
+    public static TLSRecord readRecord(InputStream in) throws IOException {
         System.out.println("\n---Response---\n");
         int type = in.read();
         System.out.println(type);
@@ -28,7 +28,9 @@ public class TLSRecordFactory {
         System.out.println();
         switch (type) {
             case 22: // handshake
-                return HandshakeMessage.valueOf(message);
+                return TLSRecord.valueOf(HandshakeMessage.valueOf(message));
+            case 14: // ChangeCipherSpec
+                return TLSRecord.valueOf(ChangeCipherSpec.valueOf(message));
             default:
                 throw new RuntimeException("Unknown TLS Record type: " + type);
         }
