@@ -8,7 +8,7 @@ public class ServerKeyExchange implements HandshakeMessage {
     private int namedCurve;
     private int[] pubKey;
     private HashAlgorithm hashAlgorithm;
-    private int signatureAlgorithm;
+    private SignatureAlgorithm signatureAlgorithm;
     private int[] signature;
 
     public ServerKeyExchange(int[] message) {
@@ -19,7 +19,7 @@ public class ServerKeyExchange implements HandshakeMessage {
         pubKey = Arrays.copyOfRange(message, i, i + pubKeyLen);
         i += pubKeyLen;
         hashAlgorithm = HashAlgorithm.valueOf(message[i++]);
-        signatureAlgorithm = message[i++];
+        signatureAlgorithm = SignatureAlgorithm.valueOf(message[i++]);
         int sigLen = (message[i++] << 8) + message[i++];
         signature = Arrays.copyOfRange(message, i, i + sigLen);
     }
@@ -33,7 +33,7 @@ public class ServerKeyExchange implements HandshakeMessage {
     }
 
     public int getSignatureAlgorithm() {
-        return signatureAlgorithm;
+        return signatureAlgorithm.getId();
     }
 
     public int getNamedCurve() {
