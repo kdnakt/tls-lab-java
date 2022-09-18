@@ -97,6 +97,7 @@ class LibraryTest {
             Certificate certificate = (Certificate) TLSRecordFactory.readRecord(in).getHandshakeMessage();
             X509Certificate c = certificate.getX509Certificate();
             assertNotNull(c);
+            assertEquals("ST=Tokyo,C=JP", c.getIssuerX500Principal().getName());
             System.out.println("Stop reading input stream.");
             // Certificate, Server Key Exchange, Server Hello Done
         } catch (Exception e) {
