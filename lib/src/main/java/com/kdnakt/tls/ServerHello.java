@@ -1,6 +1,7 @@
 package com.kdnakt.tls;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ServerHello implements HandshakeMessage {
@@ -8,7 +9,7 @@ public class ServerHello implements HandshakeMessage {
     private int[] message;
     private int majorVersion;
     private int minorVersion;
-    private int[] random = new int[32];
+    private int[] random;
     private int sessionIdLen;
     private int cipherSuite;
     private int compressionMethod;
@@ -20,7 +21,7 @@ public class ServerHello implements HandshakeMessage {
         int i = 0;
         majorVersion = message[i++];
         minorVersion = message[i++];
-        System.arraycopy(message, i, random, 0, 32);
+        random = Arrays.copyOfRange(message, i, i + 32);
         i += 32;
         sessionIdLen = message[i++];
         // Cipher Suite: TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 (0xcca9)
@@ -30,8 +31,7 @@ public class ServerHello implements HandshakeMessage {
         for (int j = i; j < i + extLen;) {
             int type = (message[j++] << 8) + message[j++];
             int len = (message[j++] << 8) + message[j++];
-            int[] extensionData = new int[len];
-            System.arraycopy(message, i, extensionData, 0, len);
+            int[] extensionData = Arrays.copyOfRange(message, i, i + len);
             j += len;
             extensions.add(TLSExtension.valueOf(type, extensionData));
         }
