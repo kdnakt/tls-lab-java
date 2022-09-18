@@ -1,5 +1,7 @@
 package com.kdnakt.tls;
 
+import java.util.Arrays;
+
 public interface HandshakeMessage {
 
     static HandshakeMessage valueOf(int[] bytes) {
@@ -8,8 +10,7 @@ public interface HandshakeMessage {
         int len2 = bytes[2];
         int len3 = bytes[3];
         int length = (len1 << 16) + (len2 << 8) + len3;
-        int[] message = new int[length];
-        System.arraycopy(bytes, 4, message, 0, length);
+        int[] message = Arrays.copyOfRange(bytes, 4, 4 + length);
         switch (type) {
             case 2:
                 return new ServerHello(message);
