@@ -1,5 +1,7 @@
 package com.kdnakt.tls;
 
+import java.util.Arrays;
+
 public class ServerKeyExchange implements HandshakeMessage {
 
     private int curveType;
@@ -14,14 +16,12 @@ public class ServerKeyExchange implements HandshakeMessage {
         curveType = message[i++];
         namedCurve = (message[i++] << 8) + message[i++];
         int pubKeyLen = message[i++];
-        pubKey = new int[pubKeyLen];
-        System.arraycopy(message, i, pubKey, 0, pubKeyLen);
+        pubKey = Arrays.copyOfRange(message, i, i + pubKeyLen);
         i += pubKeyLen;
         hashAlgorithm = message[i++];
         signatureAlgorithm = message[i++];
         int sigLen = (message[i++] << 8) + message[i++];
-        signature = new int[sigLen];
-        System.arraycopy(message, i, signature, 0, sigLen);
+        signature = Arrays.copyOfRange(message, i, i + sigLen);
     }
 
     public int[] getPublicKey() {
