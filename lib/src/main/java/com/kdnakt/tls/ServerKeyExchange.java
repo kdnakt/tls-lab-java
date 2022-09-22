@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class ServerKeyExchange implements HandshakeMessage {
 
+    private int[] message;
     private int curveType;
     private int namedCurve;
     private int[] pubKey;
@@ -12,6 +13,7 @@ public class ServerKeyExchange implements HandshakeMessage {
     private int[] signature;
 
     public ServerKeyExchange(int[] message) {
+        this.message = message;
         int i = 0;
         curveType = message[i++];
         namedCurve = (message[i++] << 8) + message[i++];
@@ -38,6 +40,11 @@ public class ServerKeyExchange implements HandshakeMessage {
 
     public int getNamedCurve() {
         return namedCurve;
+    }
+
+    @Override
+    public int[] getMessage() {
+        return message;
     }
 
 }

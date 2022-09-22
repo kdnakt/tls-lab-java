@@ -34,4 +34,10 @@ public class ClientKeyExchange implements HandshakeMessage {
         baos.writeTo(out);
     }
 
+    @Override
+    public int[] getMessage() {
+        int[] message = new int[40];
+        return message;
+    }
+
 }

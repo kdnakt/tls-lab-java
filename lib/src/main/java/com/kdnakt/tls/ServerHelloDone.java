@@ -12,4 +12,10 @@ public class ServerHelloDone implements HandshakeMessage {
         return length;
     }
 
+    @Override
+    public int[] getMessage() {
+        int[] message = new int[4];
+        return message;
+    }
+
 }

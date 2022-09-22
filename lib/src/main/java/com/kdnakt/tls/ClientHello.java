@@ -20,6 +20,7 @@ public class ClientHello implements HandshakeMessage {
         };
     }
 
+    @Override
     public int[] getMessage() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         // example from https://tls12.xargs.org/

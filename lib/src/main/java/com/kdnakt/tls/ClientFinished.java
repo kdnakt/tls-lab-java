@@ -51,7 +51,9 @@ public class ClientFinished {
         byte[] seed = new byte[cf.length + 32];
         System.arraycopy(cf, 0, seed, 0, cf.length);
         MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
-        byte[] handshakeMessages = null;
+        int hmLen = 0;
+        for (HandshakeMessage m : handshakes) hmLen += m.getMessage().length;
+        byte[] handshakeMessages = new byte[hmLen];
         byte[] hashed = sha256.digest(handshakeMessages);
         System.arraycopy(hashed, 0, seed, cf.length, 32);
         byte[] a0 = seed;
@@ -72,8 +74,8 @@ public class ClientFinished {
         byte[] verifyData = new byte[12];
         System.arraycopy(p1, 0, verifyData, 0, 12);
 
-
-        out.write(message);
+        // TODO: encrypt verify data
+        out.write(verifyData);
     }
 
     public List<HandshakeMessage> getHandshakes() {
