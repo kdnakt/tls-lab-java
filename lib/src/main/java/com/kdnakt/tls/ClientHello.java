@@ -79,10 +79,10 @@ public class ClientHello implements HandshakeMessage {
                 0x00, 0x0a, // supported groups
                 0x00, 0x0a, // 10 bytes follows
                 0x00, 0x08, // 8 bytes follows
-                0x00, 0x1d, // curve x25519
                 0x00, 0x17, // curve secp256r1
                 0x00, 0x18, // curve secp384r1
                 0x00, 0x19, // curve secp521r1
+                0x00, 0x1d, // curve x25519
                 // ec_point_formats
                 0x00, 0x0b, // ec point formats
                 0x00, 0x02, // 2 bytes follows

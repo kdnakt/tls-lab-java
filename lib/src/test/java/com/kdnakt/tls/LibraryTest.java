@@ -8,14 +8,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.security.AlgorithmParameters;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPrivateKey;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.spec.ECGenParameterSpec;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.ECPoint;
+import java.security.spec.ECPublicKeySpec;
+import java.util.Arrays;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.Mac;
@@ -184,10 +191,20 @@ class LibraryTest {
             generator.initialize(256);
             KeyPair pair = generator.genKeyPair();
             ECPrivateKey privateKey = (ECPrivateKey) pair.getPrivate();
+
+            AlgorithmParameters params = AlgorithmParameters.getInstance("EC", Security.getProvider("SunEC"));
+            params.init(new ECGenParameterSpec("secp256r1"));
+            ECParameterSpec ecParams = params.getParameterSpec(ECParameterSpec.class);
+
             KeyFactory f = KeyFactory.getInstance("EC");
-            ByteArrayOutputStream encodedKey = new ByteArrayOutputStream();
-            for (int k : publicKey) encodedKey.write(k);
-            X509EncodedKeySpec spec = new X509EncodedKeySpec(encodedKey.toByteArray());
+            ByteArrayOutputStream point = new ByteArrayOutputStream();
+            for (int k : publicKey) point.write(k);
+            byte[] data = point.toByteArray();
+            int n = (data.length - 1) / 2;
+            byte[] xb = Arrays.copyOfRange(data, 1, 1 + n);
+            byte[] yb = Arrays.copyOfRange(data, 1 + n, n + 1 + n);
+            ECPoint ecPoint = new ECPoint(new BigInteger(1, xb), new BigInteger(1, yb));
+            ECPublicKeySpec spec = new ECPublicKeySpec(ecPoint, ecParams);
             PublicKey serverPubKey = f.generatePublic(spec);
             KeyAgreement ecdh = KeyAgreement.getInstance("ECDH");
             ecdh.init(privateKey);
