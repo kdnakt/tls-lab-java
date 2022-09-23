@@ -314,8 +314,7 @@ class LibraryTest {
             byte[] serverWriteKey = new byte[16];
             System.arraycopy(p, 20 + 16 + 16, serverWriteKey, 0, 16);
             // client write IV = [next 16 bytes of p]
-            byte[] clientWriteIV = new byte[16];
-            System.arraycopy(p, 20 + 16 + 16 + 16, clientWriteIV, 0, 16);
+            byte[] clientWriteIV = Arrays.copyOfRange(p, 20 + 16 + 16 + 16, 20 + 16 + 16 + 16 + 16);
             // server write IV = [next 16 bytes of p]
             byte[] serverWriteIV = new byte[16];
             System.arraycopy(p, 20 + 16 + 16 + 16 + 16, serverWriteIV, 0, 16);
@@ -328,6 +327,8 @@ class LibraryTest {
             ClientFinished cf = new ClientFinished(
                 clientWriteIV,
                 master_secret,
+                clientWriteKey,
+                clientWriteMacKey,
                 clientHello,
                 sh,
                 certificate,

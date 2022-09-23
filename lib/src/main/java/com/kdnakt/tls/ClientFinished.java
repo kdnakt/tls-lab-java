@@ -1,26 +1,41 @@
 package com.kdnakt.tls;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.Mac;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class ClientFinished {
 
     private byte[] clientWriteIV;
+    private byte[] clientWriteKey;
+    private byte[] clientWriteMacKey;
     private SecretKeySpec masterSecret;
     private List<HandshakeMessage> handshakes = new ArrayList<>();
 
-    public ClientFinished(byte[] clientWriteIV, SecretKeySpec masterSecret, ClientHello clientHello, ServerHello sh, Certificate certificate, ServerKeyExchange ske,
+    public ClientFinished(byte[] clientWriteIV, SecretKeySpec masterSecret,
+            byte[] clientWriteKey, byte[] clientWriteMacKey,
+            ClientHello clientHello, ServerHello sh,
+            Certificate certificate, ServerKeyExchange ske,
             ServerHelloDone done, ClientKeyExchange cke, ClientChangeCipherSpec cccs) {
         this.clientWriteIV = clientWriteIV;
         this.masterSecret = masterSecret;
+        this.clientWriteKey = clientWriteKey;
+        this.clientWriteMacKey = clientWriteMacKey;
         handshakes.add(clientHello);
         handshakes.add(sh);
         handshakes.add(certificate);
@@ -30,21 +45,15 @@ public class ClientFinished {
         handshakes.add(cccs);
     }
 
-    public void writeTo(OutputStream out) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        byte[] message = null;
-        // record header
-        // encryption IV
-        // TODO: make it random
+    public void writeTo(OutputStream out) throws IOException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        // TODO: create new random IV
         byte[] encryptionIV = {
             0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
-            0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f
+            0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
         };
+
         // encrypted handshake message
-
         // handshake message to encrypt
-        // type = 14
-        // length = uint24
-
         // verify data
         // seed = "client finished" + SHA256(all handshake messages)
         byte[] cf = "client finished".getBytes();
@@ -71,11 +80,44 @@ public class ClientFinished {
         // p1 = HMAC-SHA256(key=MasterSecret, data=a1 + seed)
         byte[] p1 = mac.doFinal(data);
         // verify_data = p1[first 12 bytes]
-        byte[] verifyData = new byte[12];
-        System.arraycopy(p1, 0, verifyData, 0, 12);
+        byte[] verifyData = Arrays.copyOf(p1, 12);
+        int len = verifyData.length;
+        ByteArrayOutputStream message = new ByteArrayOutputStream();
+        message.write(0x14); // type finished
+        message.write(len >> 16);
+        message.write(len >> 8);
+        message.write(len);
+        message.write(verifyData);
 
-        // TODO: encrypt verify data
-        out.write(verifyData);
+        Mac sha = Mac.getInstance(algorithm);
+        sha.init(new SecretKeySpec(clientWriteMacKey, "AES"));
+        message.write(sha.doFinal(message.toByteArray()));
+        int padLen = message.toByteArray().length % 16;
+        if (padLen == 0) padLen = 16;
+        int padByte = padLen - 1;
+        for (int i = 0; i < padLen; i++) {
+            message.write(padByte);
+        }
+
+        byte[] finishedMessage = message.toByteArray();
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(16 * 8, encryptionIV);
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(clientWriteKey, "AES"), gcmSpec);
+        byte[] encryptedData = cipher.doFinal(finishedMessage);
+
+        // Record
+        ByteArrayOutputStream record = new ByteArrayOutputStream();
+        // record header
+        record.write(0x16); // type handshake
+        record.write(0x03); // major
+        record.write(0x03); // minor
+        int recordLen = encryptedData.length + encryptionIV.length;
+        record.write(recordLen >> 8);
+        record.write(recordLen);
+        record.write(encryptionIV);
+        record.write(encryptedData);
+
+        out.write(record.toByteArray());
     }
 
     public List<HandshakeMessage> getHandshakes() {
