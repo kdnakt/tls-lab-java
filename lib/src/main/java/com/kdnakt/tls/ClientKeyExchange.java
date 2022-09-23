@@ -15,7 +15,7 @@ public class ClientKeyExchange implements HandshakeMessage {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(0x16); // type handshake
         baos.write(0x03); // major version
-        baos.write(0x01); // minor version
+        baos.write(0x03); // minor version
 
         // calculate length
         baos.write(0x25);
