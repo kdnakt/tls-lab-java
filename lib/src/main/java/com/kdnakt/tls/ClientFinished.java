@@ -103,6 +103,10 @@ public class ClientFinished {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec gcmSpec = new GCMParameterSpec(16 * 8, encryptionIV);
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(clientWriteKey, "AES"), gcmSpec);
+        // https://datatracker.ietf.org/doc/html/rfc5246#section-6.2.3.3
+        // additional_data = seq_num + TLSCompressed.type + TLSCompressed.version + TLSCompressed.length;
+        byte[] additionalData = null;
+        cipher.updateAAD(additionalData);
         byte[] encryptedData = cipher.doFinal(finishedMessage);
 
         // Record
