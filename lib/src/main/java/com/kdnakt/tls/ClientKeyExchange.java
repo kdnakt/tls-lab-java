@@ -18,17 +18,19 @@ public class ClientKeyExchange implements HandshakeMessage {
         baos.write(0x03); // minor version
 
         // calculate length
-        baos.write(0x25);
         byte handshakeType = 0x10;
-        baos.write(handshakeType);
         byte[] encoded = pubKey.getEncoded();
         int encodedLen = encoded.length;
         int mLen = encodedLen + 1;
+        int handshakeLen = mLen + 3 + 1;
+        baos.write(handshakeLen >> 8);
+        baos.write(handshakeLen);
+        baos.write(handshakeType);
         baos.write(mLen >> 16);
         baos.write(mLen >> 8);
         baos.write(mLen);
         baos.write(encodedLen);
-        baos.write(encoded, 9, encodedLen);
+        baos.write(encoded);
         baos.writeTo(out);
     }
 
