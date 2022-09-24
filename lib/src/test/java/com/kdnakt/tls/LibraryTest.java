@@ -187,14 +187,14 @@ class LibraryTest {
             ServerHelloDone done = (ServerHelloDone) TLSRecordFactory.readRecord(in).getHandshakeMessage();
 
             // Calculate Client Key
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
-            generator.initialize(256);
-            KeyPair pair = generator.genKeyPair();
-            ECPrivateKey privateKey = (ECPrivateKey) pair.getPrivate();
-
             AlgorithmParameters params = AlgorithmParameters.getInstance("EC", Security.getProvider("SunEC"));
-            params.init(new ECGenParameterSpec("secp256r1"));
+            params.init(new ECGenParameterSpec("secp256r1")); // TODO: use namedCurve
             ECParameterSpec ecParams = params.getParameterSpec(ECParameterSpec.class);
+
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
+            generator.initialize(new ECGenParameterSpec("secp256r1"));
+            KeyPair pair = generator.generateKeyPair();
+            ECPrivateKey privateKey = (ECPrivateKey) pair.getPrivate();
 
             KeyFactory f = KeyFactory.getInstance("EC");
             ByteArrayOutputStream point = new ByteArrayOutputStream();
