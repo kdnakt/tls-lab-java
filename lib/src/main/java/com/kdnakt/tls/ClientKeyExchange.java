@@ -21,15 +21,13 @@ public class ClientKeyExchange implements HandshakeMessage {
         baos.write(0x25);
         byte handshakeType = 0x10;
         baos.write(handshakeType);
-        byte messageLen1 = 0x00;
-        baos.write(messageLen1);
-        byte messageLen2 = 0x00;
-        baos.write(messageLen2);
-        byte messageLen3 = 0x21;
-        baos.write(messageLen3);
-        byte encodedLen = 0x20;
-        baos.write(encodedLen);
         byte[] encoded = pubKey.getEncoded();
+        int encodedLen = encoded.length;
+        int mLen = encodedLen + 1;
+        baos.write(mLen >> 16);
+        baos.write(mLen >> 8);
+        baos.write(mLen);
+        baos.write(encodedLen);
         baos.write(encoded, 9, encodedLen);
         baos.writeTo(out);
     }
