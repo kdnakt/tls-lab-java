@@ -104,8 +104,14 @@ public class ClientFinished {
         GCMParameterSpec gcmSpec = new GCMParameterSpec(16 * 8, encryptionIV);
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(clientWriteKey, "AES"), gcmSpec);
         // https://datatracker.ietf.org/doc/html/rfc5246#section-6.2.3.3
-        // additional_data = seq_num + TLSCompressed.type + TLSCompressed.version + TLSCompressed.length;
-        byte[] additionalData = null;
+        // additional_data = seq_num + TLSCompressed.type + TLSCompressed.version + TLSCompressed.length (uint16);
+        // https://datatracker.ietf.org/doc/html/rfc5246#appendix-F.2
+        // sequence numbers are 64 bits long
+        byte[] additionalData = {
+            0,0,0,0,0,0,0,0, // sequence
+            0x16, 0x03, 0x03,
+            0,0,(byte) finishedMessage.length
+        };
         cipher.updateAAD(additionalData);
         byte[] encryptedData = cipher.doFinal(finishedMessage);
 
