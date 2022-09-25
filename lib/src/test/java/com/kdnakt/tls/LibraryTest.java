@@ -192,6 +192,48 @@ class LibraryTest {
             ECParameterSpec ecParams = params.getParameterSpec(ECParameterSpec.class);
 
             KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
+            generator.initialize(ecParams);
+            KeyPair pair = generator.generateKeyPair();
+            ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic());
+            cke.writeTo(out);
+
+            System.out.println("Stop reading input stream.");
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
+    @Test void testClientChangeCipherSpec() {
+        try (Socket socket = new Socket("localhost", 443);
+            OutputStream out = socket.getOutputStream();
+            InputStream in = socket.getInputStream()) {
+
+            ClientHello clientHello = new ClientHello();
+            clientHello.writeTo(out);
+
+            int[] clientRandom = clientHello.getRandom();
+            assertEquals(32, clientRandom.length);
+
+            System.out.println();
+            // Server Hello
+            // Cipher Suite: TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 (0xcca9)
+            ServerHello sh = (ServerHello) TLSRecordFactory.readRecord(in).getHandshakeMessage();
+            int[] serverRandom = sh.getRandom();
+            // Certificate
+            Certificate certificate = (Certificate) TLSRecordFactory.readRecord(in).getHandshakeMessage();
+            // ServerKeyExchange
+            ServerKeyExchange ske = (ServerKeyExchange) TLSRecordFactory.readRecord(in).getHandshakeMessage();
+            int namedCurve = ske.getNamedCurve(); // 13+160=173=x25519
+            int[] publicKey = ske.getPublicKey();
+            // ServerHelloDone
+            ServerHelloDone done = (ServerHelloDone) TLSRecordFactory.readRecord(in).getHandshakeMessage();
+
+            // Calculate Client Key
+            AlgorithmParameters params = AlgorithmParameters.getInstance("EC", Security.getProvider("SunEC"));
+            params.init(new ECGenParameterSpec("secp256r1")); // TODO: use namedCurve
+            ECParameterSpec ecParams = params.getParameterSpec(ECParameterSpec.class);
+
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
             generator.initialize(new ECGenParameterSpec("secp256r1"));
             KeyPair pair = generator.generateKeyPair();
             ECPrivateKey privateKey = (ECPrivateKey) pair.getPrivate();
