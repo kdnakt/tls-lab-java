@@ -204,6 +204,44 @@ class LibraryTest {
             ClientHello clientHello = new ClientHello();
             clientHello.writeTo(out);
 
+            // Server Hello
+            TLSRecordFactory.readRecord(in).getHandshakeMessage();
+            // Certificate
+            TLSRecordFactory.readRecord(in).getHandshakeMessage();
+            // ServerKeyExchange
+            TLSRecordFactory.readRecord(in).getHandshakeMessage();
+            // ServerHelloDone
+            TLSRecordFactory.readRecord(in).getHandshakeMessage();
+
+            // Calculate Client Key
+            AlgorithmParameters params = AlgorithmParameters.getInstance("EC", Security.getProvider("SunEC"));
+            params.init(new ECGenParameterSpec("secp256r1")); // TODO: use namedCurve
+            ECParameterSpec ecParams = params.getParameterSpec(ECParameterSpec.class);
+
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
+            generator.initialize(new ECGenParameterSpec("secp256r1"));
+            KeyPair pair = generator.generateKeyPair();
+
+            ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic());
+            cke.writeTo(out);
+
+            ClientChangeCipherSpec cccs = new ClientChangeCipherSpec();
+            cccs.writeTo(out);
+
+            System.out.println("Stop reading input stream.");
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
+    @Test void testClientFinished() {
+        try (Socket socket = new Socket("localhost", 443);
+            OutputStream out = socket.getOutputStream();
+            InputStream in = socket.getInputStream()) {
+
+            ClientHello clientHello = new ClientHello();
+            clientHello.writeTo(out);
+
             int[] clientRandom = clientHello.getRandom();
             assertEquals(32, clientRandom.length);
 
