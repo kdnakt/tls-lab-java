@@ -27,6 +27,7 @@ public class ClientKeyExchange implements HandshakeMessage {
         byte[] y = Arrays.copyOfRange(p.getAffineY().toByteArray(), 1, 33);
         int encodedLen = 1 + x.length + y.length;
         byte[] encoded = new byte[encodedLen];
+        // TODO: read value from server hello Supported Point Formats Extension
         encoded[0] = 0x04; // uncompressed
         System.arraycopy(x, 0, encoded, 1, x.length);
         System.arraycopy(y, 0, encoded, 1 + x.length, y.length);
