@@ -6,13 +6,16 @@ import java.io.OutputStream;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECPoint;
+import java.security.spec.EllipticCurve;
 import java.util.Arrays;
 
 public class ClientKeyExchange implements HandshakeMessage {
 
     private PublicKey pubKey;
-    public ClientKeyExchange(PublicKey pubKey) {
+    private EllipticCurve curve;
+    public ClientKeyExchange(PublicKey pubKey, EllipticCurve curve) {
         this.pubKey = pubKey;
+        this.curve = curve;
     }
     public void writeTo(OutputStream out) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -187,7 +187,7 @@ class LibraryTest {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
             generator.initialize(ecParams);
             KeyPair pair = generator.generateKeyPair();
-            ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic());
+            ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic(), ecParams.getCurve());
             cke.writeTo(out);
 
             System.out.println("Stop reading input stream.");
@@ -222,7 +222,7 @@ class LibraryTest {
             generator.initialize(new ECGenParameterSpec("secp256r1"));
             KeyPair pair = generator.generateKeyPair();
 
-            ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic());
+            ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic(), ecParams.getCurve());
             cke.writeTo(out);
 
             ClientChangeCipherSpec cccs = new ClientChangeCipherSpec();
@@ -391,7 +391,7 @@ class LibraryTest {
             // server write IV = [next 16 bytes of p]
             byte[] serverWriteIV = new byte[16];
             System.arraycopy(p, 20 + 16 + 16 + 16 + 16, serverWriteIV, 0, 16);
-            ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic());
+            ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic(), ecParams.getCurve());
             cke.writeTo(out);
 
             ClientChangeCipherSpec cccs = new ClientChangeCipherSpec();
