@@ -4,6 +4,7 @@ public class TLSRecord {
 
     private HandshakeMessage handshakeMessage;
     private ChangeCipherSpec changeCipherSpec;
+    private Alert alert;
 
     private TLSRecord() {
         // do nothing
@@ -37,4 +38,12 @@ public class TLSRecord {
         return changeCipherSpec;
     }
 
+    public static TLSRecord valueOf(Alert alert) {
+        TLSRecord rec = new TLSRecord();
+        rec.alert = alert;
+        return rec;
+    }
+    public Alert getAlert() {
+        return alert;
+    }
 }

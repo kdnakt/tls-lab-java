@@ -234,7 +234,7 @@ class LibraryTest {
         }
     }
 
-    @Test void testClientFinished() {
+    @Test void testAlertBadRecordMac() {
         try (Socket socket = new Socket("localhost", 443);
             OutputStream out = socket.getOutputStream();
             InputStream in = socket.getInputStream()) {
@@ -412,8 +412,12 @@ class LibraryTest {
             );
             cf.writeTo(out);
 
-            ServerChangeCipherSpec sccs = (ServerChangeCipherSpec) TLSRecordFactory.readRecord(in).getChangeCipherSpec();
-            assertNotNull(sccs);
+            Alert alert = (Alert) TLSRecordFactory.readRecord(in).getAlert();
+            assertNotNull(alert);
+            // fatal
+            assertEquals(2, alert.getLevel());
+            // bad record mac
+            assertEquals(20, alert.getDescription());
             System.out.println("Stop reading input stream.");
         } catch (Exception e) {
             fail(e);

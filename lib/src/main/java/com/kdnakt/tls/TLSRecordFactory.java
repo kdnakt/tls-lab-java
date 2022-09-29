@@ -29,8 +29,10 @@ public class TLSRecordFactory {
         switch (type) {
             case 22: // handshake
                 return TLSRecord.valueOf(HandshakeMessage.valueOf(message));
-            case 14: // ChangeCipherSpec
+            case 20: // ChangeCipherSpec
                 return TLSRecord.valueOf(ChangeCipherSpec.valueOf(message));
+            case 21: // Alert
+                return TLSRecord.valueOf(Alert.valueOf(message));
             default:
                 throw new RuntimeException("Unknown TLS Record type: " + type);
         }
