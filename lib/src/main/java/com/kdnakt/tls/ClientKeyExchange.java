@@ -26,14 +26,20 @@ public class ClientKeyExchange implements HandshakeMessage {
         // calculate length
         byte handshakeType = 0x10;
         ECPoint p = ((ECPublicKey) pubKey).getW();
-        byte[] x = Arrays.copyOfRange(p.getAffineX().toByteArray(), 1, 33);
-        byte[] y = Arrays.copyOfRange(p.getAffineY().toByteArray(), 1, 33);
-        int encodedLen = 1 + x.length + y.length;
-        byte[] encoded = new byte[encodedLen];
-        // TODO: read value from server hello Supported Point Formats Extension
-        encoded[0] = 0x04; // uncompressed
-        System.arraycopy(x, 0, encoded, 1, x.length);
-        System.arraycopy(y, 0, encoded, 1 + x.length, y.length);
+        // cf: https://github.com/AdoptOpenJDK/openjdk-jdk11/blob/master/src/java.base/share/classes/sun/security/util/ECUtil.java#L64
+        int n = (curve.getField().getFieldSize() + 7) >> 3;
+        byte[] xb = trimZeroes(p.getAffineX().toByteArray());
+        byte[] yb = trimZeroes(p.getAffineY().toByteArray());
+        if ((xb.length > n) || (yb.length > n)) {
+            throw new RuntimeException
+                ("Point coordinates do not match field size");
+        }
+
+        byte[] encoded = new byte[1 + (n << 1)];
+        encoded[0] = 4; // uncompressed
+        System.arraycopy(xb, 0, encoded, n - xb.length + 1, xb.length);
+        System.arraycopy(yb, 0, encoded, encoded.length - yb.length, yb.length);
+        int encodedLen = encoded.length;
         int mLen = encodedLen + 1;
         int handshakeLen = mLen + 3 + 1;
         baos.write(handshakeLen >> 8);
@@ -53,4 +59,16 @@ public class ClientKeyExchange implements HandshakeMessage {
         return message;
     }
 
+
+    static byte[] trimZeroes(byte[] b) {
+        int i = 0;
+        while ((i < b.length - 1) && (b[i] == 0)) {
+            i++;
+        }
+        if (i == 0) {
+            return b;
+        }
+
+        return Arrays.copyOfRange(b, i, b.length);
+    }
 }
