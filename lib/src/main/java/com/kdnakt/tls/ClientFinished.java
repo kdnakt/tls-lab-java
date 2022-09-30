@@ -62,6 +62,15 @@ public class ClientFinished {
         int hmLen = 0;
         for (HandshakeMessage m : handshakes) hmLen += m.getMessage().length;
         byte[] handshakeMessages = new byte[hmLen];
+        int pos = 0;
+        for (HandshakeMessage m : handshakes) {
+            int[] mes = m.getMessage();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            for (int i : mes) baos.write(i);
+            byte[] message = baos.toByteArray();
+            System.arraycopy(message, 0, handshakeMessages, pos, message.length);
+            pos += message.length;
+        }
         byte[] hashed = sha256.digest(handshakeMessages);
         System.arraycopy(hashed, 0, seed, cf.length, 32);
         byte[] a0 = seed;
