@@ -407,8 +407,7 @@ class LibraryTest {
                 certificate,
                 ske,
                 done,
-                cke,
-                cccs
+                cke
             );
             cf.writeTo(out);
 
@@ -598,8 +597,7 @@ class LibraryTest {
                 certificate,
                 ske,
                 done,
-                cke,
-                cccs
+                cke
             );
             cf.writeTo(out);
 

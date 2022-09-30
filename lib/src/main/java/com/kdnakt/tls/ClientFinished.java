@@ -31,7 +31,7 @@ public class ClientFinished {
             byte[] clientWriteKey, byte[] clientWriteMacKey,
             ClientHello clientHello, ServerHello sh,
             Certificate certificate, ServerKeyExchange ske,
-            ServerHelloDone done, ClientKeyExchange cke, ClientChangeCipherSpec cccs) {
+            ServerHelloDone done, ClientKeyExchange cke) {
         this.clientWriteIV = clientWriteIV;
         this.masterSecret = masterSecret;
         this.clientWriteKey = clientWriteKey;
@@ -42,7 +42,6 @@ public class ClientFinished {
         handshakes.add(ske);
         handshakes.add(done);
         handshakes.add(cke);
-        handshakes.add(cccs);
     }
 
     public void writeTo(OutputStream out) throws IOException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {

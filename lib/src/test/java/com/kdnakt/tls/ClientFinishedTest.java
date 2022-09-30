@@ -15,8 +15,7 @@ public class ClientFinishedTest {
         ServerKeyExchange ske = new ServerKeyExchange(serverKeyExchange);
         ServerHelloDone done = new ServerHelloDone(0);
         ClientKeyExchange cke = new ClientKeyExchange(null, null);
-        ClientChangeCipherSpec cccs = new ClientChangeCipherSpec();
-        ClientFinished sut = new ClientFinished(null, null, null, null, ch, sh, c, ske, done, cke, cccs);
+        ClientFinished sut = new ClientFinished(null, null, null, null, ch, sh, c, ske, done, cke);
         assertEquals(7, sut.getHandshakes().size());
     }
 }
