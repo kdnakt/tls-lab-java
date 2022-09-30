@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+// TODO: ChangeCipherSpec is not handshake message
 public class ClientChangeCipherSpec implements HandshakeMessage {
 
     public void writeTo(OutputStream out) throws IOException {
