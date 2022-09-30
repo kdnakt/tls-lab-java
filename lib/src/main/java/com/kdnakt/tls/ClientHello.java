@@ -25,10 +25,10 @@ public class ClientHello implements HandshakeMessage {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         // example from https://tls12.xargs.org/
         final int[] clientHello = {
-            // Handshake header
-            0x01, // type ClientHello
-            // 0x00, 0x00, 0xa1, // 161 bytes follows
-            0x00, 0x00, 0x97, // 151 bytes follows
+            // // Handshake header
+            // 0x01, // type ClientHello
+            // // 0x00, 0x00, 0xa1, // 161 bytes follows
+            // 0x00, 0x00, 0x97, // 151 bytes follows
 
             // ClientHello
             // Client version
@@ -136,14 +136,34 @@ public class ClientHello implements HandshakeMessage {
             System.out.print(' ');
         }
         int[] message = getMessage();
-        int len1 = message.length >> 8;
+        int len1 = (message.length + 4) >> 8;
         baos.write(len1);
         System.out.print(len1);
         System.out.print(' ');
-        int len2 = message.length;
+        int len2 = message.length + 4;
         baos.write(len2);
         System.out.print(len2);
         System.out.print(' ');
+
+        // handshake message
+        int type = 0x01;
+        baos.write(type); // type client hello
+        System.out.print(type);
+        System.out.print(' ');
+        int handLen = message.length;
+        int hLen1 = handLen >> 16;
+        int hLen2 = handLen >> 8;
+        int hLen3 = handLen;
+        baos.write(hLen1);
+        System.out.print(hLen1);
+        System.out.print(' ');
+        baos.write(hLen2);
+        System.out.print(hLen2);
+        System.out.print(' ');
+        baos.write(hLen3);
+        System.out.print(hLen3);
+        System.out.print(' ');
+
         for (int i : message) {
             baos.write(i);
             System.out.print(i);
