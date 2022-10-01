@@ -55,8 +55,17 @@ public class ClientKeyExchange implements HandshakeMessage {
 
     @Override
     public int[] getMessage() {
-        int[] message = new int[40];
-        return message;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            writeTo(baos);
+        } catch (IOException ignore) {
+        }
+        byte[] message = baos.toByteArray();
+        int[] res = new int[message.length];
+        for (int i = 0; i < message.length; i++) {
+            res[i] = message[i];
+        }
+        return res;
     }
 
 
