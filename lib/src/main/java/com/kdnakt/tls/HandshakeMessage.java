@@ -25,6 +25,7 @@ public interface HandshakeMessage {
         }
     }
 
+    int getType();
     int[] getMessage();
 
 }

@@ -20,4 +20,9 @@ public class ServerHelloDone implements HandshakeMessage {
         return message;
     }
 
+    @Override
+    public int getType() {
+        return 14;
+    }
+
 }

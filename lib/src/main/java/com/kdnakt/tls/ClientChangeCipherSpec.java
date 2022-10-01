@@ -4,8 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-// TODO: ChangeCipherSpec is not handshake message
-public class ClientChangeCipherSpec implements HandshakeMessage {
+public class ClientChangeCipherSpec {
 
     public void writeTo(OutputStream out) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -15,7 +14,6 @@ public class ClientChangeCipherSpec implements HandshakeMessage {
         out.write(baos.toByteArray());
     }
 
-    @Override
     public int[] getMessage() {
         int[] message = {
             0x14,

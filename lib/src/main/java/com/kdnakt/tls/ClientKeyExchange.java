@@ -19,7 +19,7 @@ public class ClientKeyExchange implements HandshakeMessage {
     }
     public void writeTo(OutputStream out) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(0x16); // type handshake
+        baos.write(getType());
         baos.write(0x03); // major version
         baos.write(0x03); // minor version
 
@@ -79,5 +79,10 @@ public class ClientKeyExchange implements HandshakeMessage {
         }
 
         return Arrays.copyOfRange(b, i, b.length);
+    }
+
+    @Override
+    public int getType() {
+        return 16;
     }
 }

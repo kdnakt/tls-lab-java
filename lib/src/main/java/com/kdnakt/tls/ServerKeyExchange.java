@@ -47,4 +47,9 @@ public class ServerKeyExchange implements HandshakeMessage {
         return message;
     }
 
+    @Override
+    public int getType() {
+        return 12;
+    }
+
 }

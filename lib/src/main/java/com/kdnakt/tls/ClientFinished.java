@@ -19,7 +19,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class ClientFinished {
+public class ClientFinished implements HandshakeMessage {
 
     private byte[] clientWriteIV;
     private byte[] clientWriteKey;
@@ -126,7 +126,7 @@ public class ClientFinished {
         // Record
         ByteArrayOutputStream record = new ByteArrayOutputStream();
         // record header
-        record.write(0x16); // type handshake
+        record.write(getType()); // type handshake
         record.write(0x03); // major
         record.write(0x03); // minor
         int recordLen = encryptedData.length + encryptionIV.length;
@@ -140,6 +140,17 @@ public class ClientFinished {
 
     public List<HandshakeMessage> getHandshakes() {
         return handshakes;
+    }
+
+    @Override
+    public int getType() {
+        return 20;
+    }
+
+    @Override
+    public int[] getMessage() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -146,7 +146,7 @@ public class ClientHello implements HandshakeMessage {
         System.out.print(' ');
 
         // handshake message
-        int type = 0x01;
+        int type = getType();
         baos.write(type); // type client hello
         System.out.print(type);
         System.out.print(' ');
@@ -175,5 +175,10 @@ public class ClientHello implements HandshakeMessage {
 
     public int[] getRandom() {
         return random;
+    }
+
+    @Override
+    public int getType() {
+        return 1;
     }
 }

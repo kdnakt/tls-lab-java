@@ -46,4 +46,9 @@ public class ServerHello implements HandshakeMessage {
     public int[] getMessage() {
         return message;
     }
+
+    @Override
+    public int getType() {
+        return 2;
+    }
 }

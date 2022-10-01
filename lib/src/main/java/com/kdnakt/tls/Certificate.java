@@ -43,4 +43,9 @@ public class Certificate implements HandshakeMessage {
         return message;
     }
 
+    @Override
+    public int getType() {
+        return 11;
+    }
+
 }
