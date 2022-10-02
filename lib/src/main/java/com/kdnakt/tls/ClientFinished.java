@@ -60,12 +60,16 @@ public class ClientFinished implements HandshakeMessage {
         System.arraycopy(cf, 0, seed, 0, cf.length);
         MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
         int hmLen = 0;
-        for (HandshakeMessage m : handshakes) hmLen += m.getMessage().length;
+        for (HandshakeMessage m : handshakes) hmLen += m.getMessage().length + 4;
         byte[] handshakeMessages = new byte[hmLen];
         int pos = 0;
         for (HandshakeMessage m : handshakes) {
             int[] mes = m.getMessage();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            baos.write(m.getType());
+            baos.write(mes.length >> 16);
+            baos.write(mes.length >> 8);
+            baos.write(mes.length);
             for (int i : mes) baos.write(i);
             byte[] message = baos.toByteArray();
             System.arraycopy(message, 0, handshakeMessages, pos, message.length);
