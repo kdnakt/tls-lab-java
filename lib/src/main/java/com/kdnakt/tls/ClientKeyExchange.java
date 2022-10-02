@@ -19,12 +19,11 @@ public class ClientKeyExchange implements HandshakeMessage {
     }
     public void writeTo(OutputStream out) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(getType());
+        baos.write(0x16); // ContentType=Handshake 22
         baos.write(0x03); // major version
         baos.write(0x03); // minor version
 
         // calculate length
-        byte handshakeType = 0x10;
         ECPoint p = ((ECPublicKey) pubKey).getW();
         // cf: https://github.com/AdoptOpenJDK/openjdk-jdk11/blob/master/src/java.base/share/classes/sun/security/util/ECUtil.java#L64
         int n = (curve.getField().getFieldSize() + 7) >> 3;
@@ -44,7 +43,7 @@ public class ClientKeyExchange implements HandshakeMessage {
         int handshakeLen = mLen + 3 + 1;
         baos.write(handshakeLen >> 8);
         baos.write(handshakeLen);
-        baos.write(handshakeType);
+        baos.write(getType());
         baos.write(mLen >> 16);
         baos.write(mLen >> 8);
         baos.write(mLen);
