@@ -95,7 +95,7 @@ public class ClientFinished implements HandshakeMessage {
         byte[] verifyData = Arrays.copyOf(p1, 12);
         int len = verifyData.length;
         ByteArrayOutputStream message = new ByteArrayOutputStream();
-        message.write(0x14); // type finished
+        message.write(getType()); // type finished
         message.write(len >> 16);
         message.write(len >> 8);
         message.write(len);
@@ -130,7 +130,7 @@ public class ClientFinished implements HandshakeMessage {
         // Record
         ByteArrayOutputStream record = new ByteArrayOutputStream();
         // record header
-        record.write(getType()); // type handshake
+        record.write(0x16); // type handshake
         record.write(0x03); // major
         record.write(0x03); // minor
         int recordLen = encryptedData.length + encryptionIV.length;
