@@ -9,4 +9,9 @@ public class ChangeCipherSpec {
         return new ServerChangeCipherSpec();
     }
 
+    public int[] getMessage() {
+        int[] res = {0x01};
+        return res;
+    }
+
 }
