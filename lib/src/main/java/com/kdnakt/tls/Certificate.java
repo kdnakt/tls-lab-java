@@ -39,7 +39,7 @@ public class Certificate implements HandshakeMessage {
     }
 
     @Override
-    public int[] getMessage() {
+    public int[] getMessageBody() {
         return message;
     }
 

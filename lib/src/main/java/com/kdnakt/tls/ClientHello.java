@@ -1,27 +1,13 @@
 package com.kdnakt.tls;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 public class ClientHello implements HandshakeMessage {
 
     private int[] random = {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
         0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
     };
-    public int[] getRecordHeader() {
-        return new int[]{
-            // Record header
-            0x16, // type handshake
-            0x03, 0x01, // protocol version TLS1.0(3.1)
-            // 0x00, 0xa5, // 165 bytes follows
-            // 0x00, 0x9b, // 155 bytes follows
-        };
-    }
 
     @Override
-    public int[] getMessage() {
+    public int[] getMessageBody() {
         // example from https://tls12.xargs.org/
         final int[] clientHello = {
             // // Handshake header
@@ -123,53 +109,6 @@ public class ClientHello implements HandshakeMessage {
                 0x00, 0x00 // 0 byte follows
         };
         return clientHello;
-    }
-
-    public void writeTo(final OutputStream out) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.out.println("\n---Request---\n");
-        int[] recordHeader = getRecordHeader();
-        for (int r : recordHeader) {
-            baos.write(r);
-            System.out.print(r);
-            System.out.print(' ');
-        }
-        int[] message = getMessage();
-        int len1 = (message.length + 4) >> 8;
-        baos.write(len1);
-        System.out.print(len1);
-        System.out.print(' ');
-        int len2 = message.length + 4;
-        baos.write(len2);
-        System.out.print(len2);
-        System.out.print(' ');
-
-        // handshake message
-        int type = getType();
-        baos.write(type); // type client hello
-        System.out.print(type);
-        System.out.print(' ');
-        int handLen = message.length;
-        int hLen1 = handLen >> 16;
-        int hLen2 = handLen >> 8;
-        int hLen3 = handLen;
-        baos.write(hLen1);
-        System.out.print(hLen1);
-        System.out.print(' ');
-        baos.write(hLen2);
-        System.out.print(hLen2);
-        System.out.print(' ');
-        baos.write(hLen3);
-        System.out.print(hLen3);
-        System.out.print(' ');
-
-        for (int i : message) {
-            baos.write(i);
-            System.out.print(i);
-            System.out.print(' ');
-        }
-        baos.writeTo(out);
-        System.out.println();
     }
 
     public int[] getRandom() {

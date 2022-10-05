@@ -7,7 +7,7 @@ public enum TLSVersion {
     private int minor;
     TLSVersion(int major, int minor) {
         this.major = major;
-        this.major = minor;
+        this.minor = minor;
     }
     public int getMajorVersion() {
         return major;

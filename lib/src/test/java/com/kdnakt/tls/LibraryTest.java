@@ -37,7 +37,7 @@ class LibraryTest {
             InputStream in = socket.getInputStream()) {
 
             ClientHello clientHello = new ClientHello();
-            clientHello.writeTo(out);
+            TLSRecord.valueOf(clientHello).writeTo(out);
 
             System.out.println();
             // Server Hello
@@ -75,7 +75,7 @@ class LibraryTest {
             InputStream in = socket.getInputStream()) {
 
             ClientHello clientHello = new ClientHello();
-            clientHello.writeTo(out);
+            TLSRecord.valueOf(clientHello).writeTo(out);
 
             System.out.println();
             // Server Hello
@@ -95,7 +95,7 @@ class LibraryTest {
             InputStream in = socket.getInputStream()) {
 
             ClientHello clientHello = new ClientHello();
-            clientHello.writeTo(out);
+            TLSRecord.valueOf(clientHello).writeTo(out);
 
             System.out.println();
             // Server Hello
@@ -118,7 +118,7 @@ class LibraryTest {
             InputStream in = socket.getInputStream()) {
 
             ClientHello clientHello = new ClientHello();
-            clientHello.writeTo(out);
+            TLSRecord.valueOf(clientHello).writeTo(out);
 
             System.out.println();
             // Server Hello
@@ -143,7 +143,7 @@ class LibraryTest {
             InputStream in = socket.getInputStream()) {
 
             ClientHello clientHello = new ClientHello();
-            clientHello.writeTo(out);
+            TLSRecord.valueOf(clientHello).writeTo(out);
 
             System.out.println();
             // Server Hello
@@ -167,7 +167,7 @@ class LibraryTest {
             InputStream in = socket.getInputStream()) {
 
             ClientHello clientHello = new ClientHello();
-            clientHello.writeTo(out);
+            TLSRecord.valueOf(clientHello).writeTo(out);
 
             // Server Hello
             TLSRecordFactory.readRecord(in).getHandshakeMessage();
@@ -202,7 +202,7 @@ class LibraryTest {
             InputStream in = socket.getInputStream()) {
 
             ClientHello clientHello = new ClientHello();
-            clientHello.writeTo(out);
+            TLSRecord.valueOf(clientHello).writeTo(out);
 
             // Server Hello
             TLSRecordFactory.readRecord(in).getHandshakeMessage();
@@ -240,7 +240,7 @@ class LibraryTest {
             InputStream in = socket.getInputStream()) {
 
             ClientHello clientHello = new ClientHello();
-            clientHello.writeTo(out);
+            TLSRecord.valueOf(clientHello).writeTo(out);
 
             int[] clientRandom = clientHello.getRandom();
             assertEquals(32, clientRandom.length);
@@ -429,7 +429,7 @@ class LibraryTest {
             InputStream in = socket.getInputStream()) {
 
             ClientHello clientHello = new ClientHello();
-            clientHello.writeTo(out);
+            TLSRecord.valueOf(clientHello).writeTo(out);
 
             int[] clientRandom = clientHello.getRandom();
             assertEquals(32, clientRandom.length);

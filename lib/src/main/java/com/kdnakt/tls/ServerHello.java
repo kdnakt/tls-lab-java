@@ -43,7 +43,7 @@ public class ServerHello implements HandshakeMessage {
     public int length() {
         return message.length;
     }
-    public int[] getMessage() {
+    public int[] getMessageBody() {
         return message;
     }
 

@@ -53,7 +53,7 @@ public class ClientKeyExchange implements HandshakeMessage {
     }
 
     @Override
-    public int[] getMessage() {
+    public int[] getMessageBody() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             writeTo(baos);

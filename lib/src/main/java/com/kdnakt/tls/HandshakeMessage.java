@@ -26,6 +26,18 @@ public interface HandshakeMessage {
     }
 
     int getType();
-    int[] getMessage();
+
+    default int[] getMessage() {
+        int[] body = getMessageBody();
+        int[] message = new int[body.length + 4];
+        message[0] = getType();
+        message[1] = body.length >> 16;
+        message[2] = body.length >> 8;
+        message[3] = body.length;
+        System.arraycopy(body, 0, message, 4, body.length);
+        return message;
+    }
+
+    int[] getMessageBody();
 
 }

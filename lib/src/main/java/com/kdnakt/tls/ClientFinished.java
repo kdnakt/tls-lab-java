@@ -152,7 +152,7 @@ public class ClientFinished implements HandshakeMessage {
     }
 
     @Override
-    public int[] getMessage() {
+    public int[] getMessageBody() {
         // TODO Auto-generated method stub
         return null;
     }
