@@ -48,7 +48,9 @@ public class TLSRecord {
         rec.alert = alert;
         return rec;
     }
-
+    boolean isAlert() {
+        return alert != null;
+    }
     public Alert getAlert() {
         return alert;
     }
