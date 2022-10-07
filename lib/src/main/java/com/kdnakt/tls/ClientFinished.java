@@ -66,10 +66,6 @@ public class ClientFinished implements HandshakeMessage {
         for (HandshakeMessage m : handshakes) {
             int[] mes = m.getMessage();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write(m.getType());
-            baos.write(mes.length >> 16);
-            baos.write(mes.length >> 8);
-            baos.write(mes.length);
             for (int i : mes) baos.write(i);
             byte[] message = baos.toByteArray();
             System.arraycopy(message, 0, handshakeMessages, pos, message.length);
