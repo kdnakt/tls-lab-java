@@ -117,8 +117,7 @@ public class ClientFinished implements HandshakeMessage {
         // sequence numbers are 64 bits long
         byte[] additionalData = {
             0,0,0,0,0,0,0,0, // sequence
-            0x16, 0x03, 0x03,
-            0,0,(byte) finishedMessage.length
+            0x16, 0x03, 0x03, 0x00, 0x10 // record header
         };
         cipher.updateAAD(additionalData);
         byte[] encryptedData = cipher.doFinal(finishedMessage);
