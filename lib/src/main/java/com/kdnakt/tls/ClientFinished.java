@@ -35,6 +35,8 @@ public class ClientFinished implements HandshakeMessage {
         this.clientWriteIV = clientWriteIV;
         this.masterSecret = masterSecret;
         this.clientWriteKey = clientWriteKey;
+        // RFC 5246: https://www.rfc-editor.org/rfc/rfc5246
+        // 6.2.3.3.  AEAD Ciphers: No MAC key is used.
         this.clientWriteMacKey = clientWriteMacKey;
         handshakes.add(clientHello);
         handshakes.add(sh);
@@ -97,16 +99,6 @@ public class ClientFinished implements HandshakeMessage {
         message.write(len);
         message.write(verifyData);
 
-        Mac sha = Mac.getInstance(algorithm);
-        sha.init(new SecretKeySpec(clientWriteMacKey, "AES"));
-        message.write(sha.doFinal(message.toByteArray()));
-        int padLen = message.toByteArray().length % 16;
-        if (padLen == 0) padLen = 16;
-        int padByte = padLen - 1;
-        for (int i = 0; i < padLen; i++) {
-            message.write(padByte);
-        }
-
         byte[] finishedMessage = message.toByteArray();
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec gcmSpec = new GCMParameterSpec(16 * 8, encryptionIV);
@@ -131,7 +123,7 @@ public class ClientFinished implements HandshakeMessage {
         int recordLen = encryptedData.length + encryptionIV.length;
         record.write(recordLen >> 8);
         record.write(recordLen);
-        record.write(encryptionIV);
+        record.write(encryptionIV); // nonce
         record.write(encryptedData);
 
         out.write(record.toByteArray());
