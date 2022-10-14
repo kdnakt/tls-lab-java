@@ -48,9 +48,10 @@ public class ClientFinished implements HandshakeMessage {
 
     public void writeTo(OutputStream out) throws IOException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         // TODO: create new random IV
+        // cf: 12 bytes for GCM? https://crypto.stackexchange.com/questions/25060/nonce-of-aes-gcm-in-ssl
         byte[] encryptionIV = {
             0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
-            0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
+            0x48, 0x49, 0x4a, 0x4b,// 0x4c, 0x4d, 0x4e, 0x4f,
         };
 
         // encrypted handshake message
@@ -101,7 +102,7 @@ public class ClientFinished implements HandshakeMessage {
 
         byte[] finishedMessage = message.toByteArray();
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        GCMParameterSpec gcmSpec = new GCMParameterSpec(16 * 8, encryptionIV);
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(encryptionIV.length * 8, encryptionIV);
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(clientWriteKey, "AES"), gcmSpec);
         // https://datatracker.ietf.org/doc/html/rfc5246#section-6.2.3.3
         // additional_data = seq_num + TLSCompressed.type + TLSCompressed.version + TLSCompressed.length (uint16);
