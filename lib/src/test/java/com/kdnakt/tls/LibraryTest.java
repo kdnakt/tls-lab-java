@@ -565,22 +565,17 @@ class LibraryTest {
             System.arraycopy(ke_p3, 0, p, ke_p1.length + ke_p2.length, ke_p3.length);
             System.arraycopy(ke_p4, 0, p, ke_p1.length + ke_p2.length + ke_p3.length, ke_p4.length);
             // client write mac key = [first 20 bytes of p]
-            byte[] clientWriteMacKey = new byte[20];
-            System.arraycopy(p, 0, clientWriteMacKey, 0, 20);
+            byte[] clientWriteMacKey = Arrays.copyOfRange(p, 0, 20);
             // server write mac key = [next 20 bytes of p]
-            byte[] serverWriteMacKey = new byte[20];
-            System.arraycopy(p, 20, serverWriteMacKey, 0, 20);
+            byte[] serverWriteMacKey = Arrays.copyOfRange(p, 20, 40);
             // client write key = [next 16 bytes of p]
-            byte[] clientWriteKey = new byte[16];
-            System.arraycopy(p, 20 + 16, clientWriteKey, 0, 16);
+            byte[] clientWriteKey = Arrays.copyOfRange(p, 40, 40 + 16);
             // server write key = [next 16 bytes of p]
-            byte[] serverWriteKey = new byte[16];
-            System.arraycopy(p, 20 + 16 + 16, serverWriteKey, 0, 16);
+            byte[] serverWriteKey = Arrays.copyOfRange(p, 40 + 16, 40 + 16 + 16);
             // client write IV = [next 16 bytes of p]
-            byte[] clientWriteIV = Arrays.copyOfRange(p, 20 + 16 + 16 + 16, 20 + 16 + 16 + 16 + 16);
+            byte[] clientWriteIV = Arrays.copyOfRange(p, 40 + 16 + 16, 40 + 16 + 16 + 16);
             // server write IV = [next 16 bytes of p]
-            byte[] serverWriteIV = new byte[16];
-            System.arraycopy(p, 20 + 16 + 16 + 16 + 16, serverWriteIV, 0, 16);
+            byte[] serverWriteIV = Arrays.copyOfRange(p, 40 + 16 + 16 + 16, 40 + 16 + 16 + 16 + 16);
             ClientKeyExchange cke = new ClientKeyExchange(pair.getPublic(), ecParams.getCurve());
             cke.writeTo(out);
 
