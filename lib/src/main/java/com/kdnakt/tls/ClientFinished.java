@@ -109,7 +109,8 @@ public class ClientFinished implements HandshakeMessage {
         // https://datatracker.ietf.org/doc/html/rfc5246#appendix-F.2
         // sequence numbers are 64 bits long
         byte[] additionalData = {
-            0,0,0,0,0,0,0,0, // sequence
+            // TODO: hold sequence number somewhere outside of this class
+            0,0,0,0,0,0,0,0, // sequence for finished
             0x16, 0x03, 0x03, 0x00, 0x10 // record header
         };
         cipher.updateAAD(additionalData);
