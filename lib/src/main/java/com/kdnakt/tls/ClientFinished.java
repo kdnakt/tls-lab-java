@@ -63,7 +63,7 @@ public class ClientFinished implements HandshakeMessage {
         System.arraycopy(cf, 0, seed, 0, cf.length);
         MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
         int hmLen = 0;
-        for (HandshakeMessage m : handshakes) hmLen += m.getMessage().length + 4;
+        for (HandshakeMessage m : handshakes) hmLen += m.getMessage().length;
         byte[] handshakeMessages = new byte[hmLen];
         int pos = 0;
         for (HandshakeMessage m : handshakes) {
