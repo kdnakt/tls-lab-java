@@ -7,6 +7,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -103,7 +104,7 @@ public class ClientFinished implements HandshakeMessage {
         byte[] finishedMessage = message.toByteArray();
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec gcmSpec = new GCMParameterSpec(encryptionIV.length * 8, encryptionIV);
-        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(clientWriteKey, "AES"), gcmSpec);
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(clientWriteKey, "AES"), gcmSpec, SecureRandom.getInstance("NativePRNG"));
         // https://datatracker.ietf.org/doc/html/rfc5246#section-6.2.3.3
         // additional_data = seq_num + TLSCompressed.type + TLSCompressed.version + TLSCompressed.length (uint16);
         // https://datatracker.ietf.org/doc/html/rfc5246#appendix-F.2
