@@ -11,7 +11,7 @@ public class ServerHello implements HandshakeMessage {
     private int minorVersion;
     private int[] random;
     private int sessionIdLen;
-    private int cipherSuite;
+    private CipherSuite cipherSuite;
     private int compressionMethod;
     private int extLen;
     private List<TLSExtension> extensions = new ArrayList<>();
@@ -25,7 +25,7 @@ public class ServerHello implements HandshakeMessage {
         i += 32;
         sessionIdLen = message[i++];
         // Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 (0xc0 0x2b)
-        cipherSuite = (message[i++] << 8) + message[i++];
+        cipherSuite = CipherSuite.valueOf((message[i++] << 8) + message[i++]);
         compressionMethod = message[i++];
         extLen = (message[i++] << 8) + message[i++];
         for (int j = i; j < i + extLen;) {
